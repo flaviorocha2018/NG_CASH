@@ -11,8 +11,7 @@ interface Token {
 }
 
 export interface TokenData {
-  email: string,
-  password: string
+  username: string,
 }
 
 export interface ReqData extends Request {
@@ -31,15 +30,24 @@ const validateToken = (req: ReqData, res: Response, next: NextFunction): TokenDa
       res.status(401).json({ message: 'Token not found' });
       return;
     }
-
     const decoded = jwt.verify(token as string, SECRET) as Token;
-
     req.data = decoded.data;
-
     next();
   } catch (err) {
     res.status(401).json({ message: 'Token must be a valid token' });
   }
 };
 
-export { createToken, validateToken };
+const decodeToken = (token: string) => {
+  try {
+    token = token.replace('Bearer ', '');
+    const  userid  = jwt.verify(token, SECRET) as Token;
+    const returnedUserName = userid.data.username;
+    const userData = { returnedUserName }
+    return userData;
+  } catch (error) {
+    return null;
+  }
+}
+
+export { createToken, validateToken, decodeToken };

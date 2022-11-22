@@ -1,4 +1,4 @@
-import { Model, INTEGER, BOOLEAN, FLOAT, DATE } from 'sequelize';
+import { Model, INTEGER, FLOAT, DATE } from 'sequelize';
 import db from '.';
 import Account from './account';
 
@@ -39,11 +39,11 @@ Transaction.init({
   underscored: true,
   sequelize: db,
   modelName: 'transactions',
-  timestamps: false,
+  timestamps: true,
 });
 
-Transaction.belongsTo(Account, { foreignKey: 'AccountsId', as: 'AccountsId' });
+Transaction.hasMany(Account, { foreignKey: 'debitedAccountId' });
+Transaction.hasMany(Account, { foreignKey: 'creditedAccountId' });
 
-Account.hasMany(Transaction, { foreignKey: 'AccountsId', as: 'AccountsId' });
 
 export default Transaction;

@@ -1,9 +1,9 @@
-import { FLOAT, INTEGER, Model, STRING } from 'sequelize';
+import { FLOAT, INTEGER, Model } from 'sequelize';
 import db from '.';
 
 class Account extends Model {
-  id!: number;
-  teamName: string;
+  id: number;
+  balance: number;
 }
 
 Account.init({
