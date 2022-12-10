@@ -1,53 +1,17 @@
-import * as jwt from 'jsonwebtoken';
+import 'dotenv/config';
+import { sign, verify, SignOptions, JwtPayload } from 'jsonwebtoken';
 
-import { NextFunction, Request, Response } from 'express';
+const JWT_OPTIONS: SignOptions = { expiresIn: '1d', algorithm: 'HS256' };
 
-const SECRET = process.env.JWT_SECRET || 'jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
-interface Token {
-  data: TokenData,
-  iat: number,
-  exp: number
+interface IPayload extends JwtPayload {
+  username: string;
 }
 
-export interface TokenData {
-  username: string,
-}
-
-export interface ReqData extends Request {
-  data?: TokenData,
-}
-
-const createToken = (user: TokenData): string => {
-  const token = jwt.sign({ data: user }, SECRET, { expiresIn: '1d', algorithm: 'HS256' });
-  return token;
+export const createToken = (payload: IPayload ): string => {
+  return sign(payload, JWT_SECRET, JWT_OPTIONS);
 };
-
-const validateToken = (req: ReqData, res: Response, next: NextFunction): TokenData | void => {
-  try {
-    const token: string | undefined = req.headers.authorization;
-    if (!token) {
-      res.status(401).json({ message: 'Token not found' });
-      return;
-    }
-    const decoded = jwt.verify(token as string, SECRET) as Token;
-    req.data = decoded.data;
-    next();
-  } catch (err) {
-    res.status(401).json({ message: 'Token must be a valid token' });
-  }
-};
-
-const decodeToken = (token: string) => {
-  try {
-    token = token.replace('Bearer ', '');
-    const  userid  = jwt.verify(token, SECRET) as Token;
-    const returnedUserName = userid.data.username;
-    const userData = { returnedUserName }
-    return userData;
-  } catch (error) {
-    return null;
-  }
+export const verifyToken = (token: string): IPayload => {
+  return verify(token, JWT_SECRET) as IPayload
 }
-
-export { createToken, validateToken, decodeToken };

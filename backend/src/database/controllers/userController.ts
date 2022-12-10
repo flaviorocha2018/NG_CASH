@@ -1,53 +1,52 @@
 import { Request, Response } from 'express';
 import { createToken } from '../middleware/auth';
-import userService from '../services/userService';
-import accountService from '../services/accountService';
+import UserService from '../services/userService';
+import AccountService from '../services/accountService';
 
 class UserController {
-  private _userService: userService;
-  private _accountService: accountService;
-  
+
   constructor(
-    user: userService = new userService(),
-    account: accountService = new accountService(),
+   private userService = new UserService(),
+   private accountService = new AccountService(),
   ) {
-    this._userService = user;
-    this._accountService = account;
+   
   }
 
   public login = async (req: Request, res: Response, ) => {
     try {
-      const { username, password } = req.body;
-      await this._userService.login({ username, password });
-
+      const { username } = req.body;
+  
       const token = createToken({ username });
       return res.status(200).json({ token });
 
-
     } catch (error) {
-      return res.status(401).send('usuário não autorizado');
-     
+      return res.status(401).send('Login não autorizado');
     }
   };
 
-  public signUp = async (req: Request, res: Response, ) => {
+  public signUp = async (req: Request, res: Response ) => {
     try {
       const { username, password } = req.body;
-      const account = await this._accountService.create();
+     
+      const account = await this.accountService.create();
+      
       if(account.id === undefined){
         return res.status(500).send('não foi possível criar a conta')
       }
       
-      const user = await this._userService.createUser( username, password, account.id );
+      const user = await this.userService.createUser( username, password, account.id );
+     
+      const token = createToken({username: user.username})
       if(user.id === undefined){
-        return res.status(500).send('não foi possível criar o usário')
+
+        return res.status(500).send('não foi possível criar o usário / usuário já cadastrado')
       }
-      return res.status(201).json(user.id);
+      return res.status(201).json({token});
     } catch (error) {
-      return res.status(500).send('não foi possível criar o usário')
+      console.log(error)
+      return res.status(500).send('não foi possível criar o usário / usuário já cadastrado')
     }
   };
-
 
 }
 

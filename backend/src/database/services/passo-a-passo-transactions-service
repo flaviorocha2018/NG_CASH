@@ -1,0 +1,29 @@
+    ***TRANSACTION SERVICE ***
+
+Username - do usuário de origem,
+Username - do usuário de destino,
+valor da transação.
+
+1º passo - select do usuário de origem
+2º passo - select na conta do usuário,
+3º passo - verificar o balance da conta de origem 
+4º passo - diminiur o saldo da conta de origem
+5º passo  - select no usuário de destino
+6º passo - select a conta do usuário de destino
+7º passo - aumentar o saldo do usuário de destino.
+8º passo - salvar a operação dos dois usuarios.
+9º passo - Salvar a operação no history.
+
+se der erro:
+Desfazer todas as operações.
+
+Se o usuário de origem não tiver saldo suficiente.
+Erro - não é possível realizar a transação.
+
+      *** USER CONTROLLER *** 
+1º Selecionar todos os usuários 
+2º Verificar se o usuario atual username é igual a algum username existente.
+3º Se for igual: Lançar Mensagem de Erro.
+
+
+

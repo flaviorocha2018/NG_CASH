@@ -1,66 +1,33 @@
-import { NextFunction, Request, Response } from 'express';
-import transactionService from '../services/transactionService';
+import { Request, Response } from 'express';
+import TransactionService from '../services/transactionService';
+import ITransaction from '../interfaces/transactionInterface';
 
-class MatchController {
-  private _service: transactionService;
+export class transactionController {
+ 
+  constructor(
+    private transactionService = new TransactionService()) {}
 
-  constructor(service: transactionService = new transactionService()) {
-    this._service = service;
-  }
-
-  public findAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public CreateTransaction = async (req: Request, res: Response<Response>) => {
     try {
-      const { inProgress } = req.query;
-
-      let matches;
-
-      if (inProgress) {
-        const boolProgress = inProgress === 'true';
-        matches = await this._service.findAllByProgress(boolProgress);
-      } else {
-        matches = await this._service.findAll();
-      }
-
-      res.status(200).json(matches);
+    
+      const { username , value, targetUser } = req.body;
+     
+      const result = await this.transactionService.transfer(username, value, targetUser);
+      return res.status(201).json(result);
     } catch (error) {
-      next(error);
+      throw new Error ('Não foi possível realizar a transação');
     }
   };
 
-  public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAll = async (req: Request, res: Response<ITransaction[]>) => {
     try {
-      const { debitedAccountId, username, value, } = req.body;
-      const newMatch = await this._service
-        .create({ homeTeam, awayTeam, homeTeamGoals, awayTeamGoals });
-
-      res.status(201).json(newMatch);
+      const userId = req.body;
+      const transaction = await this.transactionService.getAll(userId);
+      return res.status(201).json(transaction);
     } catch (error) {
-      next(error);
-    }
-  };
-
-  public finish = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { id } = req.params;
-      await this._service.finish(id);
-
-      res.status(200).json({ message: 'Finished' });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { id } = req.params;
-      const { homeTeamGoals, awayTeamGoals } = req.body;
-      await this._service.update(id, homeTeamGoals, awayTeamGoals);
-
-      res.status(200).json({ message: 'Updated' });
-    } catch (error) {
-      next(error);
+      throw new Error ('Não foi possível realizar a transação');
     }
   };
 }
 
-export default MatchController;
+export default transactionController;

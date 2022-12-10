@@ -1,17 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-// import ValidateError from './validationError';
-// import ILoginUser from '../interfaces/LoginUser';
+import UserService from '../services/userService';
+import { z } from 'zod';
 
-import userService from '../services/userService';
-
-const service = new userService();
-console.log(service);
+const service = new UserService();
 
 const validations = {
 
   loginFields: (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body;
-    if (!email || email.length === 0) {
+    const { username, password } = req.body;
+     
+    const  LoginUserSchema = z.object({
+      username: z.string().min(2),
+      password: z.string().min(7).regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$/)
+    })
+
+    if (!username || username.length === 0) {
       return res.status(400).json({ message: 'All fields must be filled' });
     }
 
@@ -19,7 +22,9 @@ const validations = {
       return res.status(400).json({ message: 'All fields must be filled' });
     }
 
-    // validação da senha
+    if (username == LoginUserSchema && password == LoginUserSchema ) {
+      return res.status(400).json({message: 'Username invalid or password invalid'});
+    }
 
     next();
   },

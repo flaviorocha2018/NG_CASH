@@ -2,6 +2,7 @@ import { Model, INTEGER, FLOAT, DATE } from 'sequelize';
 import db from '.';
 import Account from './account';
 
+
 class Transaction extends Model {
   id!: number;
   debitedAccountId: number;
@@ -42,8 +43,10 @@ Transaction.init({
   timestamps: true,
 });
 
-Transaction.hasMany(Account, { foreignKey: 'debitedAccountId' });
-Transaction.hasMany(Account, { foreignKey: 'creditedAccountId' });
+Account.hasMany(Transaction, { foreignKey: 'debitedAccountId' });
+Account.hasMany(Transaction, { foreignKey: 'creditedAccountId' });
+
+
 
 
 export default Transaction;

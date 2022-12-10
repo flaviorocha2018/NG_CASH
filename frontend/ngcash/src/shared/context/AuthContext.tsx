@@ -1,7 +1,7 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 
 import { Api }  from '../../services/Api';
-import {LocalStorageService } from '../../services/LocalStorageService'
+import {LocalStorageService } from '../../services/LocalStorageService';
 
 interface IAuthContextData {
     hasError: boolean;
@@ -114,7 +114,7 @@ export const AuthProvider: React.FC = ({ children }) => {
             ...oldState,
             isLogged: false,
             user: {  name: '', accountNumber: ''}
-        }))
+        }));
     }, []);
 
     const [authData, setAuthData] = useState<IAuthContextData>({
@@ -132,4 +132,4 @@ export const AuthProvider: React.FC = ({ children }) => {
             {children}
         </AuthContext.Provider>
     );
-}
+};
